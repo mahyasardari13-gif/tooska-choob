@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Tooska Choob"
+version = "1.0.0"
+id = "artifacts/tooska-choob"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18865
+
+[services.development]
+run = "pnpm --filter @workspace/tooska-choob run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/tooska-choob", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/tooska-choob/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18865"
+BASE_PATH = "/"
