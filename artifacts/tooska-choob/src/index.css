@@ -30,7 +30,7 @@
   --color-muted-foreground: var(--color-fog);
   --color-accent: var(--color-clay);
   --color-accent-foreground: var(--color-sand);
-  --color-destructive: #7f1d1d;
+  --color-destructive: #991b1b;
   --color-destructive-foreground: #fef2f2;
   --color-input: var(--color-ash);
   --color-ring: var(--color-walnut);
@@ -56,7 +56,7 @@
   --muted-foreground: #9a9490;
   --accent: #2d1e12;
   --accent-foreground: #f2ede7;
-  --destructive: #7f1d1d;
+  --destructive: #991b1b;
   --destructive-foreground: #fef2f2;
   --border: #252525;
   --input: #252525;
@@ -64,60 +64,86 @@
   --radius: 0px;
 }
 
+/* ─── Base ─────────────────────────────────── */
 body {
   direction: rtl;
   font-family: 'Vazirmatn', sans-serif;
   background-color: var(--color-jet);
   color: var(--color-sand);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-jet);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-ash);
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-walnut);
+/* Offset sections so fixed navbar doesn't cover headings */
+section[id],
+div[id] {
+  scroll-margin-top: 5rem;
 }
 
+/* ─── Scrollbar ─────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--color-jet); }
+::-webkit-scrollbar-thumb { background: var(--color-ash); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-walnut); }
+
+/* ─── Focus Visible ─────────────────────────── */
+*:focus-visible {
+  outline: 2px solid var(--color-walnut);
+  outline-offset: 3px;
+}
+
+/* ─── Glass ─────────────────────────────────── */
 .glass {
-  background: rgba(8, 8, 8, 0.6);
+  background: rgba(8, 8, 8, 0.65);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(184, 134, 78, 0.15);
+  border-bottom: 1px solid rgba(184, 134, 78, 0.12);
 }
 
+/* ─── Section heading label ─────────────────── */
 .section-heading {
   color: var(--color-walnut);
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
   margin-bottom: 1rem;
+  display: block;
 }
 
+/* ─── Buttons ────────────────────────────────── */
 .btn-primary {
   background-color: var(--color-walnut);
   color: var(--color-jet);
-  font-weight: 500;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  font-weight: 600;
+  transition: background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
 }
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0);
+  transition: background 0.3s ease;
+}
 .btn-primary:hover {
   background-color: var(--color-copper);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(184, 134, 78, 0.25);
+}
+.btn-primary:active {
+  transform: translateY(0);
 }
 
 .btn-outline {
@@ -125,7 +151,10 @@ html {
   border: 1px solid var(--color-walnut);
   color: var(--color-sand);
   font-weight: 500;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -133,8 +162,14 @@ html {
 .btn-outline:hover {
   background-color: var(--color-walnut);
   color: var(--color-jet);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(184, 134, 78, 0.2);
+}
+.btn-outline:active {
+  transform: translateY(0);
 }
 
+/* ─── Grain bg ───────────────────────────────── */
 .grain-bg {
   position: relative;
 }
@@ -144,6 +179,81 @@ html {
   inset: 0;
   background-image: radial-gradient(var(--color-clay) 1px, transparent 1px);
   background-size: 32px 32px;
-  opacity: 0.15;
+  opacity: 0.12;
   pointer-events: none;
+}
+
+/* ─── Lazy image fade-in ─────────────────────── */
+img[loading="lazy"] {
+  transition: opacity 0.4s ease;
+}
+
+/* ─── Portfolio card hover ───────────────────── */
+.portfolio-card {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.portfolio-card:hover {
+  transform: scale(1.01);
+}
+
+/* ─── Process step hover ─────────────────────── */
+.process-step-circle {
+  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease,
+              box-shadow 0.4s ease;
+}
+.process-step-circle:hover {
+  box-shadow: 0 0 0 6px rgba(184, 134, 78, 0.12);
+}
+
+/* ─── Service card ───────────────────────────── */
+.service-card-overlay {
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.service-card-text {
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.service-card-desc {
+  transition: opacity 0.3s ease 0.08s;
+}
+
+/* ─── Scroll-to-top button ───────────────────── */
+.scroll-top-btn {
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.3s ease;
+}
+
+/* ─── Form inputs ────────────────────────────── */
+.form-input {
+  transition: box-shadow 0.3s ease, background-color 0.2s ease;
+}
+.form-input:focus {
+  box-shadow: 0 0 0 2px var(--color-walnut);
+}
+
+/* ─── Nav link underline ─────────────────────── */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  right: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--color-walnut);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* ─── Lightbox ───────────────────────────────── */
+.lightbox-btn {
+  transition: background-color 0.25s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+.lightbox-btn:hover {
+  background-color: rgba(184, 134, 78, 0.2);
+  transform: scale(1.08);
 }
