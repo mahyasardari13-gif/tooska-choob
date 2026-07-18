@@ -8,28 +8,28 @@
 @theme inline {
   --font-sans: 'Vazirmatn', sans-serif;
 
-  --color-coal: #0a0a0a;
-  --color-charcoal: #111111;
-  --color-smoke: #1a1a1a;
-  --color-ash: #2a2a2a;
-  --color-silver: #8a8278;
-  --color-parchment: #f5f0eb;
-  --color-cream: #ede8e1;
-  --color-walnut: #c49a6c;
-  --color-dark-walnut: #3d2b1f;
-  --color-gold: #d4a96a;
-  
-  --color-background: var(--color-coal);
-  --color-foreground: var(--color-parchment);
+  --color-jet: #080808;
+  --color-void: #0f0f0f;
+  --color-charcoal: #161616;
+  --color-ash: #252525;
+  --color-fog: #9a9490;
+  --color-sand: #f2ede7;
+  --color-linen: #e8e2da;
+  --color-walnut: #b8864e;
+  --color-copper: #c9935a;
+  --color-clay: #2d1e12;
+
+  --color-background: var(--color-jet);
+  --color-foreground: var(--color-sand);
   --color-card: var(--color-charcoal);
-  --color-card-foreground: var(--color-parchment);
+  --color-card-foreground: var(--color-sand);
   --color-border: var(--color-ash);
   --color-primary: var(--color-walnut);
-  --color-primary-foreground: var(--color-coal);
-  --color-muted: var(--color-smoke);
-  --color-muted-foreground: var(--color-silver);
-  --color-accent: var(--color-dark-walnut);
-  --color-accent-foreground: var(--color-parchment);
+  --color-primary-foreground: var(--color-jet);
+  --color-muted: var(--color-charcoal);
+  --color-muted-foreground: var(--color-fog);
+  --color-accent: var(--color-clay);
+  --color-accent-foreground: var(--color-sand);
   --color-destructive: #7f1d1d;
   --color-destructive-foreground: #fef2f2;
   --color-input: var(--color-ash);
@@ -42,33 +42,33 @@
 }
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #f5f0eb;
-  --card: #111111;
-  --card-foreground: #f5f0eb;
-  --popover: #111111;
-  --popover-foreground: #f5f0eb;
-  --primary: #c49a6c;
-  --primary-foreground: #0a0a0a;
-  --secondary: #1a1a1a;
-  --secondary-foreground: #f5f0eb;
-  --muted: #1a1a1a;
-  --muted-foreground: #8a8278;
-  --accent: #3d2b1f;
-  --accent-foreground: #f5f0eb;
+  --background: #080808;
+  --foreground: #f2ede7;
+  --card: #161616;
+  --card-foreground: #f2ede7;
+  --popover: #161616;
+  --popover-foreground: #f2ede7;
+  --primary: #b8864e;
+  --primary-foreground: #080808;
+  --secondary: #2d1e12;
+  --secondary-foreground: #f2ede7;
+  --muted: #161616;
+  --muted-foreground: #9a9490;
+  --accent: #2d1e12;
+  --accent-foreground: #f2ede7;
   --destructive: #7f1d1d;
   --destructive-foreground: #fef2f2;
-  --border: #2a2a2a;
-  --input: #2a2a2a;
-  --ring: #c49a6c;
+  --border: #252525;
+  --input: #252525;
+  --ring: #b8864e;
   --radius: 0px;
 }
 
 body {
   direction: rtl;
   font-family: 'Vazirmatn', sans-serif;
-  background-color: var(--color-coal);
-  color: var(--color-parchment);
+  background-color: var(--color-jet);
+  color: var(--color-sand);
   overflow-x: hidden;
 }
 
@@ -80,7 +80,7 @@ html {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-coal);
+  background: var(--color-jet);
 }
 ::-webkit-scrollbar-thumb {
   background: var(--color-ash);
@@ -90,10 +90,10 @@ html {
 }
 
 .glass {
-  background: rgba(10, 10, 10, 0.55);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(196, 154, 108, 0.15);
+  background: rgba(8, 8, 8, 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(184, 134, 78, 0.15);
 }
 
 .section-heading {
@@ -101,36 +101,38 @@ html {
   font-size: 0.875rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   margin-bottom: 1rem;
 }
 
 .btn-primary {
   background-color: var(--color-walnut);
-  color: var(--color-coal);
+  color: var(--color-jet);
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 .btn-primary:hover {
-  background-color: var(--color-gold);
+  background-color: var(--color-copper);
 }
 
 .btn-outline {
   background-color: transparent;
   border: 1px solid var(--color-walnut);
-  color: var(--color-parchment);
+  color: var(--color-sand);
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 .btn-outline:hover {
   background-color: var(--color-walnut);
-  color: var(--color-coal);
+  color: var(--color-jet);
 }
 
 .grain-bg {
@@ -140,8 +142,8 @@ html {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(var(--color-dark-walnut) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-image: radial-gradient(var(--color-clay) 1px, transparent 1px);
+  background-size: 32px 32px;
   opacity: 0.15;
   pointer-events: none;
 }

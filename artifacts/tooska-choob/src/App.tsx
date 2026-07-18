@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
+import { motion, AnimatePresence, useInView, useScroll, useTransform } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Toaster, toast } from 'sonner';
-import { Menu, X, Phone, Mail, MapPin, ChevronLeft, Star, ChevronDown, CheckCircle2 } from 'lucide-react';
-import { SiInstagram, SiWhatsapp } from 'react-icons/si';
+import { 
+  Menu, X, Phone, Mail, MapPin, ChevronLeft, ChevronDown, CheckCircle2,
+  Clock, CalendarDays, ArrowDown, Map, ShieldCheck, Wrench, HeadphonesIcon, DraftingCompass, Ruler
+} from 'lucide-react';
+import { SiInstagram, SiTelegram } from 'react-icons/si';
 
 // --- Images ---
 import heroImg from "../attached_assets/generated_images/hero.jpg";
@@ -14,7 +17,7 @@ import sDoor from "../attached_assets/generated_images/service_door.jpg";
 import sTvwall from "../attached_assets/generated_images/service_tvwall.jpg";
 import sWardrobe from "../attached_assets/generated_images/service_wardrobe.jpg";
 import sDecor from "../attached_assets/generated_images/service_decor.jpg";
-import sConsult from "../attached_assets/generated_images/service_consult.jpg";
+import sPartition from "../attached_assets/generated_images/service_partition.jpg";
 import aboutImg from "../attached_assets/generated_images/about_workshop.jpg";
 import p1 from "../attached_assets/generated_images/portfolio_1.jpg";
 import p2 from "../attached_assets/generated_images/portfolio_2.jpg";
@@ -24,11 +27,8 @@ import p5 from "../attached_assets/generated_images/portfolio_5.jpg";
 import p6 from "../attached_assets/generated_images/portfolio_6.jpg";
 import p7 from "../attached_assets/generated_images/portfolio_7.jpg";
 import p8 from "../attached_assets/generated_images/portfolio_8.jpg";
-import avatar1 from "../attached_assets/generated_images/avatar_1.jpg";
-import avatar2 from "../attached_assets/generated_images/avatar_2.jpg";
-import avatar3 from "../attached_assets/generated_images/avatar_3.jpg";
 
-// --- Types & Schemas ---
+// --- Form Schema ---
 const contactSchema = z.object({
   name: z.string().min(2, 'نام باید حداقل ۲ حرف باشد'),
   phone: z.string().min(11, 'شماره تماس معتبر نیست'),
@@ -39,19 +39,29 @@ const contactSchema = z.object({
 type ContactFormValues = z.infer<typeof contactSchema>;
 
 // --- Helper Components ---
-const FadeIn = ({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 40 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, amount: 0.15 }}
-    transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay }}
-    className={className}
-  >
-    {children}
-  </motion.div>
-);
+const FadeIn = ({ children, delay = 0, className = "", direction = "up" }: { children: React.ReactNode, delay?: number, className?: string, direction?: "up" | "left" | "right" | "none" }) => {
+  const y = direction === "up" ? 40 : 0;
+  const x = direction === "left" ? 40 : direction === "right" ? -40 : 0;
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y, x }}
+      whileInView={{ opacity: 1, y: 0, x: 0 }}
+      viewport={{ once: true, amount: 0.15 }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
-const Counter = ({ value, suffix = "" }: { value: number, suffix?: string }) => {
+const PersianNumber = ({ num }: { num: number | string }) => {
+  const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+  return <>{num.toString().replace(/\d/g, x => persianDigits[parseInt(x)])}</>;
+};
+
+const Counter = ({ value, suffix = "", prefix = "" }: { value: number, suffix?: string, prefix?: string }) => {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
   const [count, setCount] = useState(0);
@@ -76,7 +86,11 @@ const Counter = ({ value, suffix = "" }: { value: number, suffix?: string }) => 
     }
   }, [value, inView]);
 
-  return <span ref={ref} dir="ltr" className="inline-block">{count}{suffix}</span>;
+  return (
+    <span ref={ref} dir="rtl" className="inline-block">
+      {prefix}<PersianNumber num={count} />{suffix}
+    </span>
+  );
 };
 
 // --- Main App Component ---
@@ -85,6 +99,9 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState('همه');
+  const { scrollY } = useScroll();
+  const heroY = useTransform(scrollY, [0, 1000], [0, 250]);
+  const heroOpacity = useTransform(scrollY, [0, 800], [1, 0]);
 
   useEffect(() => {
     document.documentElement.dir = 'rtl';
@@ -100,7 +117,7 @@ export default function App() {
 
   const onSubmit = async (data: ContactFormValues) => {
     await new Promise(r => setTimeout(r, 1500));
-    toast.success('پیام شما با موفقیت ارسال شد. به زودی تماس خواهیم گرفت.');
+    toast.success('درخواست شما با موفقیت ثبت شد. به زودی با شما تماس خواهیم گرفت.');
     reset();
   };
 
@@ -108,97 +125,101 @@ export default function App() {
   const navLinks = [
     { label: 'خانه', href: '#home' },
     { label: 'خدمات', href: '#services' },
-    { label: 'پروژه‌ها', href: '#portfolio' },
-    { label: 'درباره ما', href: '#about' },
-    { label: 'سوالات متداول', href: '#faq' },
-    { label: 'تماس', href: '#contact' },
+    { label: 'چرا توسکا چوب', href: '#why-us' },
+    { label: 'فرآیند', href: '#process' },
+    { label: 'نمونه کارها', href: '#portfolio' },
+    { label: 'مشتریان', href: '#clients' },
+    { label: 'تماس با ما', href: '#contact' },
   ];
 
   const services = [
-    { title: 'کابینت آشپزخانه', desc: 'طراحی و اجرای کابینت‌های لوکس با تلفیق چوب طبیعی و متریال‌های مدرن.', img: sKitchen },
-    { title: 'درب‌های داخلی', desc: 'درب‌های تمام چوب با جزئیات دقیق و استحکام بی‌نظیر برای فضاهای خاص.', img: sDoor },
-    { title: 'دیوار TV', desc: 'دیوارهای دکوراتیو چوبی، نقطه‌ی کانونی و شاهکار نشیمن شما.', img: sTvwall },
-    { title: 'کمد و جاکفشی', desc: 'کمدهای دیواری سفارشی با طراحی ارگونومیک و نورپردازی هوشمند.', img: sWardrobe },
-    { title: 'دکوراسیون داخلی', desc: 'طراحی جامع و اجرای دکوراسیون چوبی متناسب با سبک زندگی شما.', img: sDecor },
-    { title: 'مشاوره طراحی', desc: 'همراهی شما از ایده تا اجرا توسط مهندسین و طراحان برجسته.', img: sConsult },
+    { title: 'کابینت آشپزخانه', desc: 'طراحی و اجرای کابینت‌های سفارشی با بالاترین کیفیت متریال.', img: sKitchen, span: 'col-span-1 md:col-span-2' },
+    { title: 'کمد دیواری', desc: 'کمدهای مدرن و کلاسیک با فضاسازی هوشمندانه و ارگونومیک.', img: sWardrobe, span: 'col-span-1' },
+    { title: 'تی وی وال', desc: 'دیوارهای دکوراتیو و نقاط کانونی خیره‌کننده برای نشیمن.', img: sTvwall, span: 'col-span-1' },
+    { title: 'دکوراسیون داخلی', desc: 'طراحی جامع و یکپارچه فضاهای مسکونی و اداری.', img: sDecor, span: 'col-span-1 md:col-span-2' },
+    { title: 'درب های چوبی', desc: 'درب‌های تمام چوب، روکش چوب و مدرن با دوام بی‌نظیر.', img: sDoor, span: 'col-span-1 md:col-span-2' },
+    { title: 'پارتیشن', desc: 'جداکننده‌های فضا با طراحی خلاقانه و کاربردی.', img: sPartition, span: 'col-span-1' },
+  ];
+
+  const features = [
+    { icon: <ShieldCheck size={24} />, title: 'بیش از ۳۲ سال تجربه' },
+    { icon: <Map size={24} />, title: 'اجرای پروژه در سراسر ایران' },
+    { icon: <DraftingCompass size={24} />, title: 'طراحی سه بعدی' },
+    { icon: <HeadphonesIcon size={24} />, title: 'مشاوره تخصصی' },
+    { icon: <Ruler size={24} />, title: 'اندازه گیری در محل' },
+    { icon: <CheckCircle2 size={24} />, title: 'ضمانت ۶ ماهه (به جز یراق آلات)' },
+    { icon: <Wrench size={24} />, title: 'ضمانت نصب' },
+    { icon: <Clock size={24} />, title: 'خدمات پس از فروش' }
+  ];
+
+  const processSteps = [
+    { num: '۱', title: 'مشاوره', desc: 'بررسی نیازها و ارائه راهکارهای اولیه تخصصی.' },
+    { num: '۲', title: 'اندازه‌گیری', desc: 'برداشت دقیق ابعاد فضا توسط تیم فنی.' },
+    { num: '۳', title: 'طراحی سه‌بعدی', desc: 'ارائه طرح 3D پیش از شروع ساخت.' },
+    { num: '۴', title: 'تولید', desc: 'ساخت قطعات در کارگاه مجهز توسکا چوب.' },
+    { num: '۵', title: 'نصب', desc: 'اجرای تمیز و دقیق در محل پروژه.' },
+    { num: '۶', title: 'پشتیبانی', desc: 'خدمات و گارانتی پس از تحویل نهایی.' },
   ];
 
   const projects = [
-    { id: 1, img: p1, cat: 'کابینت', title: 'آشپزخانه مدرن نیاوران', colClass: 'md:col-span-2 md:row-span-2' },
-    { id: 2, img: p2, cat: 'کمد', title: 'کلوزت روم اختصاصی', colClass: 'md:col-span-1 md:row-span-1' },
-    { id: 3, img: p3, cat: 'دیوار TV', title: 'دیوار TV طرح سنگ و چوب', colClass: 'md:col-span-1 md:row-span-1' },
-    { id: 4, img: p4, cat: 'دکوراسیون', title: 'طراحی داخلی ویلای لواسان', colClass: 'md:col-span-1 md:row-span-1' },
-    { id: 5, img: p5, cat: 'کابینت', title: 'آشپزخانه نئوکلاسیک', colClass: 'md:col-span-1 md:row-span-1' },
-    { id: 6, img: p6, cat: 'درب', title: 'درب‌های تمام چوب بلوط', colClass: 'md:col-span-1 md:row-span-1' },
-    { id: 7, img: p7, cat: 'دکوراسیون', title: 'طراحی فضای نشیمن', colClass: 'md:col-span-2 md:row-span-1' },
-    { id: 8, img: p8, cat: 'کمد', title: 'کمد دیواری هوشمند', colClass: 'md:col-span-1 md:row-span-1' },
+    { id: 1, img: p1, cat: 'کابینت', span: 'md:col-span-2 md:row-span-2' },
+    { id: 2, img: p2, cat: 'کمد', span: 'md:col-span-1 md:row-span-1' },
+    { id: 3, img: p3, cat: 'تی وی وال', span: 'md:col-span-1 md:row-span-1' },
+    { id: 4, img: p4, cat: 'دکوراسیون', span: 'md:col-span-1 md:row-span-2' },
+    { id: 5, img: p5, cat: 'کابینت', span: 'md:col-span-2 md:row-span-1' },
+    { id: 6, img: p6, cat: 'درب', span: 'md:col-span-1 md:row-span-1' },
+    { id: 7, img: p7, cat: 'دکوراسیون', span: 'md:col-span-1 md:row-span-1' },
+    { id: 8, img: p8, cat: 'کمد', span: 'md:col-span-1 md:row-span-1' },
   ];
-
+  
   const filteredProjects = activeFilter === 'همه' ? projects : projects.filter(p => p.cat === activeFilter);
-
-  const processSteps = [
-    { num: '۰۱', title: 'مشاوره اولیه', desc: 'بررسی نیازها، سلیقه و بودجه شما در یک جلسه رایگان.' },
-    { num: '۰۲', title: 'طراحی و رندر', desc: 'خلق مدل سه‌بعدی دقیق از فضا پیش از شروع ساخت.' },
-    { num: '۰۳', title: 'تأیید و قرارداد', desc: 'نهایی‌سازی متریال‌ها، زمان‌بندی و عقد قرارداد رسمی.' },
-    { num: '۰۴', title: 'ساخت و اجرا', desc: 'تولید قطعات با دقت میلی‌متری در کارگاه تخصصی ما.' },
-    { num: '۰۵', title: 'تحویل نهایی', desc: 'نصب بی‌نقص، کنترل کیفیت نهایی و تحویل کلید.' },
-  ];
-
-  const testimonials = [
-    { text: 'کیفیت اجرای کابینت‌های ما بی‌نظیر بود. دقت در جزئیات و استفاده از بهترین یراق‌آلات نشان‌دهنده تعهد تیم توسکا چوب است. آشپزخانه ما حالا قلب تپنده خانه‌مان شده است.', name: 'علیرضا مجیدی', role: 'پروژه ویلای لواسان', avatar: avatar1, stars: 5 },
-    { text: 'تیم طراحی توسکا چوب دقیقاً همان چیزی را که در ذهن داشتم به تصویر کشید و در اجرا حتی فراتر از انتظارم عمل کردند. کلوزت روم اختصاصی من شاهکار است.', name: 'سارا تهرانی', role: 'پروژه برج چناران', avatar: avatar2, stars: 5 },
-    { text: 'به عنوان یک معمار، همیشه به دنبال پیمانکارانی هستم که زبان طراحی را بفهمند. توسکا چوب نه‌تنها کیفیت بالایی دارد، بلکه در زمان‌بندی نیز بسیار دقیق است.', name: 'مهندس کیوان راد', role: 'دفتر معماری راد', avatar: avatar3, stars: 5 },
-  ];
-
-  const faqs = [
-    { q: 'مدت زمان اجرای یک پروژه کابینت چقدر است؟', a: 'بسته به ابعاد و پیچیدگی طراحی، معمولاً بین ۳۰ تا ۴۵ روز کاری پس از تأیید نهایی طرح و عقد قرارداد زمان می‌برد.' },
-    { q: 'آیا امکان مشاهده نمونه‌کارها به صورت حضوری وجود دارد؟', a: 'بله، با هماهنگی قبلی می‌توانید از شوروم ما و همچنین کارگاه تولیدی بازدید فرمایید تا کیفیت متریال‌ها را از نزدیک بسنجید.' },
-    { q: 'ضمانت محصولات شما چند ساله است؟', a: 'تمامی محصولات توسکا چوب دارای ۵ سال گارانتی تعویض یراق‌آلات و تضمین کیفیت رنگ و متریال می‌باشند.' },
-    { q: 'آیا طراحی سه‌بعدی قبل از اجرا ارائه می‌دهید؟', a: 'قطعاً. پیش از شروع مراحل ساخت، رندرهای واقع‌گرایانه سه‌بعدی به شما ارائه می‌شود تا در صورت نیاز تغییرات اعمال گردد.' },
-    { q: 'روش پرداخت و شرایط قرارداد چگونه است؟', a: 'پرداخت در سه مرحله انجام می‌شود: ۵۰٪ پیش‌پرداخت، ۳۰٪ پس از اتمام ساخت در کارگاه، و ۲۰٪ پس از نصب و تحویل نهایی.' },
-    { q: 'آیا خدمات نصب و راه‌اندازی را نیز انجام می‌دهید؟', a: 'بله، تیم نصب حرفه‌ای ما تمامی قطعات را با نهایت دقت و رعایت استانداردهای ایمنی در محل پروژه شما نصب می‌کنند.' },
-  ];
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const clients = ['ASP', 'گنو', 'آلدوز آذربایجان', 'توسعه صنعتی ایران', 'آباد راهان'];
 
   return (
     <>
-      <Toaster position="bottom-center" theme="dark" dir="rtl" />
+      <Toaster position="bottom-center" theme="dark" dir="rtl" toastOptions={{ style: { background: 'var(--color-charcoal)', borderColor: 'var(--color-walnut)', color: 'var(--color-sand)' } }} />
 
       {/* Floating Buttons */}
-      <div className="fixed bottom-8 left-6 z-[60] flex flex-col gap-4">
-        <a href="https://instagram.com/tooskachoob" target="_blank" rel="noreferrer" 
-           className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] flex items-center justify-center text-white shadow-[0_4px_20px_rgba(220,39,67,0.3)] hover:scale-110 transition-transform duration-300">
-          <SiInstagram size={24} />
-        </a>
-        <a href="https://wa.me/989123456789" target="_blank" rel="noreferrer"
-           className="w-14 h-14 rounded-full bg-[#25D366] flex items-center justify-center text-white shadow-[0_4px_20px_rgba(37,211,102,0.3)] hover:scale-110 transition-transform duration-300">
-          <SiWhatsapp size={28} />
+      <div className="fixed bottom-6 left-6 z-[60] flex flex-col gap-3">
+        <div className="relative group">
+          <a href="#" onClick={(e) => e.preventDefault()}
+             className="w-12 h-12 rounded-full bg-jet/80 border border-ash flex items-center justify-center text-fog transition-all duration-300">
+            <SiInstagram size={20} />
+          </a>
+          <div className="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-3 py-1.5 bg-jet border border-ash text-xs text-sand whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded pointer-events-none">
+            به زودی فعال می‌شود
+          </div>
+        </div>
+        
+        <a href="https://t.me/tooska_chob" target="_blank" rel="noreferrer"
+           className="w-12 h-12 rounded-full bg-[#2AABEE] flex items-center justify-center text-white shadow-[0_4px_20px_rgba(42,171,238,0.25)] hover:scale-110 transition-transform duration-300">
+          <SiTelegram size={24} />
         </a>
       </div>
 
       {/* Navbar */}
-      <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 border-b ${isScrolled ? 'glass border-walnut/20 py-4' : 'bg-transparent border-transparent py-6'}`}>
+      <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ${isScrolled ? 'glass py-4' : 'bg-transparent border-transparent py-6'}`}>
         <div className="container mx-auto px-6 lg:px-12 flex items-center justify-between">
           <div className="flex flex-col items-start">
-            <span className="text-2xl font-bold text-walnut tracking-tight">توسکا چوب</span>
-            <span className="text-silver text-[10px] uppercase tracking-wider mt-1 hidden sm:block">طراحی و اجرای دکوراسیون داخلی</span>
+            <span className="text-2xl font-black text-walnut tracking-tight">توسکا چوب</span>
+            <span className="text-fog text-[10px] tracking-widest mt-1 uppercase">از ۱۳۷۳</span>
           </div>
 
-          <div className="hidden lg:flex items-center gap-10">
+          <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a key={link.label} href={link.href} className="text-sm font-medium text-parchment hover:text-walnut transition-colors">
+              <a key={link.label} href={link.href} className="text-sm font-medium text-sand/80 hover:text-walnut transition-colors">
                 {link.label}
               </a>
             ))}
           </div>
 
           <div className="hidden lg:block">
-            <a href="#contact" className="btn-outline px-6 py-2.5 text-sm rounded-none">
+            <a href="#contact" className="btn-primary px-6 py-2.5 text-sm">
               مشاوره رایگان
             </a>
           </div>
 
-          <button className="lg:hidden text-parchment" onClick={() => setMobileMenuOpen(true)}>
+          <button className="lg:hidden text-sand" onClick={() => setMobileMenuOpen(true)}>
             <Menu size={28} />
           </button>
         </div>
@@ -210,17 +231,20 @@ export default function App() {
           <motion.div 
             initial={{ opacity: 0, x: '100%' }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: '100%' }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-[100] bg-coal flex flex-col p-8"
+            className="fixed inset-0 z-[100] bg-jet flex flex-col p-8"
           >
             <div className="flex justify-between items-center mb-16">
-              <span className="text-2xl font-bold text-walnut">توسکا چوب</span>
-              <button onClick={() => setMobileMenuOpen(false)} className="text-silver hover:text-parchment"><X size={32}/></button>
+              <div className="flex flex-col items-start">
+                <span className="text-2xl font-black text-walnut">توسکا چوب</span>
+                <span className="text-fog text-[10px] tracking-widest mt-1">از ۱۳۷۳</span>
+              </div>
+              <button onClick={() => setMobileMenuOpen(false)} className="text-sand"><X size={32}/></button>
             </div>
-            <div className="flex flex-col gap-8 text-xl font-medium">
+            <div className="flex flex-col gap-6 text-xl font-medium">
               {navLinks.map((link) => (
                 <a 
                   key={link.label} href={link.href} onClick={() => setMobileMenuOpen(false)}
-                  className="text-parchment hover:text-walnut border-b border-ash pb-4 transition-colors"
+                  className="text-sand hover:text-walnut border-b border-ash pb-4 transition-colors"
                 >
                   {link.label}
                 </a>
@@ -232,14 +256,11 @@ export default function App() {
 
       <main>
         {/* HERO */}
-        <section id="home" className="relative h-screen min-h-[700px] w-full flex flex-col justify-center overflow-hidden">
-          <motion.div 
-            initial={{ scale: 1.15 }} animate={{ scale: 1 }} transition={{ duration: 15, ease: "easeOut" }}
-            className="absolute inset-0 z-0"
-          >
-            <img src={heroImg} alt="Luxury Interior" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-coal via-coal/60 to-transparent" />
-            <div className="absolute inset-0 bg-black/20" />
+        <section id="home" className="relative h-screen min-h-[700px] w-full flex flex-col justify-center overflow-hidden bg-jet">
+          <motion.div style={{ y: heroY, opacity: heroOpacity }} className="absolute inset-0 z-0">
+            <img src={heroImg} alt="Tooska Choob Interior" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-jet via-jet/70 to-jet/30" />
+            <div className="absolute inset-0 bg-black/20 mix-blend-multiply" />
           </motion.div>
 
           <div className="container relative z-10 mx-auto px-6 lg:px-12 mt-20">
@@ -248,92 +269,94 @@ export default function App() {
               variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.2 } } }}
               className="max-w-4xl"
             >
-              <motion.div variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }}>
-                <h1 className="text-[56px] md:text-7xl lg:text-[110px] font-black leading-[1.1] mb-6">
-                  هنر چوب،<br />
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-walnut via-gold to-walnut">معماری فضا</span>
+              <motion.div variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }} className="mb-6">
+                <div className="inline-flex items-center border border-walnut/40 bg-jet/50 backdrop-blur-sm px-4 py-1.5 mb-6 text-sm text-sand">
+                  <span className="text-walnut font-medium">از سال ۱۳۷۳</span>
+                  <span className="mx-3 text-ash">|</span>
+                  <span>بیش از ۳۲ سال تجربه</span>
+                </div>
+                <h1 className="text-6xl md:text-8xl lg:text-[120px] font-black leading-[1.1] text-sand">
+                  توسکا چوب
                 </h1>
               </motion.div>
               
               <motion.p 
                 variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }}
-                className="text-lg md:text-xl text-silver max-w-2xl leading-relaxed mb-10"
+                className="text-lg md:text-2xl text-fog max-w-2xl leading-relaxed mb-10 font-light"
               >
-                توسکا چوب، بیش از یک شرکت دکوراسیون — ما فضاهایی می‌سازیم که ماندگار می‌شوند. تلفیقی از اصالت چوب و طراحی مینیمال.
+                طراحی و اجرای کابینت، دکوراسیون داخلی، تی وی وال، کمد دیواری و درب های چوبی.
               </motion.p>
               
               <motion.div 
                 variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }}
                 className="flex flex-wrap gap-4"
               >
-                <a href="#portfolio" className="btn-primary px-8 py-4 min-w-[200px]">مشاهده پروژه‌ها</a>
-                <a href="#contact" className="btn-outline px-8 py-4 min-w-[200px]">مشاوره رایگان</a>
+                <a href="#contact" className="btn-primary px-10 py-4 text-lg">مشاوره رایگان</a>
+                <a href="#contact" className="btn-outline px-10 py-4 text-lg">تماس با ما</a>
               </motion.div>
             </motion.div>
           </div>
 
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5, duration: 1 }}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 z-10"
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10"
           >
-            <span className="text-silver text-xs uppercase tracking-[0.2em]">اسکرول کنید</span>
-            <div className="w-[1px] h-12 bg-silver/20 overflow-hidden relative">
-              <motion.div 
-                animate={{ y: [-48, 48] }} 
-                transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                className="absolute top-0 left-0 w-full h-full bg-walnut"
-              />
-            </div>
+            <motion.div 
+              animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+              className="text-walnut"
+            >
+              <ArrowDown size={24} strokeWidth={1.5} />
+            </motion.div>
           </motion.div>
-
-          <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-gold/30 to-transparent z-10" />
         </section>
 
-        {/* STATS */}
-        <section className="bg-charcoal border-b border-ash py-16">
+        {/* STATS BAR */}
+        <section className="bg-charcoal border-y border-ash py-12 relative z-20">
           <div className="container mx-auto px-6 lg:px-12">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 divide-transparent md:divide-x md:divide-x-reverse md:divide-ash">
               {[
-                { n: 15, s: '+', l: 'سال تجربه' },
+                { n: 32, s: '+', l: 'سال تجربه' },
                 { n: 500, s: '+', l: 'پروژه اجرا شده' },
-                { n: 3, s: '', l: 'شهر فعال' },
-                { n: 100, s: '٪', l: 'رضایت مشتری' }
+                { n: 6, s: '', l: 'نوع خدمت تخصصی' },
+                { n: 6, s: '', l: 'ماه ضمانت' }
               ].map((stat, i) => (
                 <div key={i} className="flex flex-col items-center justify-center text-center px-4">
                   <div className="text-4xl md:text-5xl font-bold text-walnut mb-2">
                     <Counter value={stat.n} suffix={stat.s} />
                   </div>
-                  <div className="text-sm text-silver">{stat.l}</div>
+                  <div className="text-sm text-fog font-medium">{stat.l}</div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* SERVICES */}
-        <section id="services" className="py-24 md:py-32 bg-coal">
+        {/* SERVICES (LIGHT SECTION) */}
+        <section id="services" className="py-24 md:py-32 bg-sand text-jet">
           <div className="container mx-auto px-6 lg:px-12">
             <FadeIn className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
-              <div className="section-heading">خدمات ما</div>
-              <h2 className="text-3xl md:text-5xl font-bold">شاهکارهای سفارشی چوبی</h2>
+              <div className="section-heading text-copper">خدمات توسکا چوب</div>
+              <h2 className="text-3xl md:text-5xl font-black text-jet">تسلط بر چوب و فضا</h2>
             </FadeIn>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {services.map((s, i) => (
-                <FadeIn key={i} delay={i * 0.1}>
+                <FadeIn key={i} delay={i * 0.1} className={s.span}>
                   <motion.div 
-                    whileHover={{ scale: 1.02, y: -5 }}
-                    className="group relative h-[450px] overflow-hidden rounded-none border border-ash hover:border-walnut/50 transition-colors duration-500 bg-charcoal flex flex-col"
+                    whileHover={{ y: -5 }}
+                    className="group relative h-[350px] md:h-[400px] overflow-hidden bg-linen flex flex-col"
                   >
-                    <div className="h-[60%] overflow-hidden relative">
-                      <img src={s.img} alt={s.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-charcoal to-transparent opacity-80" />
+                    <img src={s.img} alt={s.title} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-jet/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    
+                    <div className="absolute inset-0 p-8 flex flex-col justify-end text-sand">
+                      <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 flex flex-col">
+                        <h3 className="text-2xl font-bold mb-2 group-hover:text-walnut transition-colors">{s.title}</h3>
+                        <p className="text-sand/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 leading-relaxed">
+                          {s.desc}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1 p-6 glass relative z-10 flex flex-col justify-center border-t border-transparent group-hover:border-walnut/30 transition-colors">
-                      <h3 className="text-xl font-bold text-parchment mb-3">{s.title}</h3>
-                      <p className="text-sm text-silver leading-relaxed">{s.desc}</p>
-                    </div>
-                    <div className="absolute bottom-0 left-0 w-full h-[2px] bg-walnut scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500" />
                   </motion.div>
                 </FadeIn>
               ))}
@@ -341,89 +364,36 @@ export default function App() {
           </div>
         </section>
 
-        {/* PORTFOLIO */}
-        <section id="portfolio" className="py-24 md:py-32 bg-charcoal grain-bg border-y border-ash">
+        {/* WHY US (DARK SECTION) */}
+        <section id="why-us" className="py-24 md:py-32 bg-jet border-t border-ash grain-bg relative">
           <div className="container mx-auto px-6 lg:px-12 relative z-10">
-            <FadeIn className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
-              <div>
-                <div className="section-heading">نمونه‌کارهای ما</div>
-                <h2 className="text-3xl md:text-5xl font-bold">تجلی زیبایی در اجرا</h2>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {['همه', 'کابینت', 'کمد', 'دیوار TV', 'دکوراسیون'].map(cat => (
-                  <button 
-                    key={cat}
-                    onClick={() => setActiveFilter(cat)}
-                    className={`px-5 py-2 text-sm border transition-all duration-300 ${activeFilter === cat ? 'bg-walnut border-walnut text-coal font-medium' : 'bg-transparent border-ash text-silver hover:border-walnut hover:text-parchment'}`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </FadeIn>
-
-            <motion.div layout className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[250px]">
-              <AnimatePresence>
-                {filteredProjects.map((p) => (
-                  <motion.div
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.4 }}
-                    key={p.id} 
-                    className={`relative overflow-hidden group cursor-pointer ${p.colClass}`}
-                    onClick={() => setLightboxImg(p.img)}
-                  >
-                    <img src={p.img} alt={p.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-coal/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-center p-6 text-center">
-                      <span className="text-walnut text-xs tracking-widest mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{p.cat}</span>
-                      <h4 className="text-xl font-bold text-parchment transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">{p.title}</h4>
-                      <div className="mt-6 w-10 h-10 rounded-full border border-walnut flex items-center justify-center text-walnut transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-100 hover:bg-walnut hover:text-coal">
-                        <ChevronLeft size={20} />
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* WHY US */}
-        <section className="py-24 md:py-32 bg-coal">
-          <div className="container mx-auto px-6 lg:px-12">
             <div className="flex flex-col lg:flex-row gap-16 items-center">
-              <FadeIn className="w-full lg:w-1/2 order-2 lg:order-1">
+              <FadeIn className="w-full lg:w-5/12 order-2 lg:order-1" direction="right">
                 <div className="relative">
-                  <div className="aspect-[4/5] overflow-hidden border border-ash">
-                    <img src={aboutImg} alt="Tooska Choob Workshop" className="w-full h-full object-cover" />
+                  <div className="aspect-[3/4] overflow-hidden">
+                    <img src={aboutImg} alt="Workshop" className="w-full h-full object-cover grayscale-[20%] sepia-[10%]" />
                   </div>
-                  <div className="absolute -bottom-6 -right-6 w-3/4 h-3/4 border-b border-r border-walnut z-[-1]" />
+                  <div className="absolute -bottom-6 -left-6 w-full h-full border border-walnut z-[-1]" />
+                  <div className="absolute top-1/2 -right-8 -translate-y-1/2 w-16 h-32 bg-clay mix-blend-screen opacity-50 blur-2xl" />
                 </div>
               </FadeIn>
 
-              <div className="w-full lg:w-1/2 order-1 lg:order-2">
-                <FadeIn>
+              <div className="w-full lg:w-7/12 order-1 lg:order-2">
+                <FadeIn direction="left">
                   <div className="section-heading">چرا توسکا چوب؟</div>
-                  <h2 className="text-3xl md:text-5xl font-bold mb-12">چرا صدها خانواده ما را انتخاب کردند؟</h2>
+                  <h2 className="text-3xl md:text-5xl font-black mb-8 leading-tight">پشتوانه‌ای از اصالت<br />و تعهد به کیفیت</h2>
+                  <p className="text-fog text-lg leading-relaxed mb-12 max-w-xl">
+                    ما معتقدیم کیفیت یک اتفاق نیست، بلکه حاصل سال‌ها تجربه، انتخاب متریال درجه یک و تعهد به خلق ارزش برای مشتریان است.
+                  </p>
                 </FadeIn>
 
-                <div className="space-y-10">
-                  {[
-                    { title: 'کیفیت بی‌رقیب', desc: 'بهترین متریال چوب اروپایی و ایرانی با استانداردهای جهانی.' },
-                    { title: 'طراحی منحصربه‌فرد', desc: 'هر پروژه یک شاهکار یکتاست که متناسب با سلیقه شما خلق می‌شود.' },
-                    { title: 'اجرای دقیق', desc: 'تیم متخصص با ۱۵ سال سابقه، دقت میلی‌متری در تمامی مراحل.' },
-                    { title: 'ضمانت ۵ ساله', desc: 'تعهد به کیفیت پس از تحویل و همراهی همیشگی با مشتریان.' }
-                  ].map((feat, i) => (
-                    <FadeIn key={i} delay={i * 0.1} className="flex gap-6">
-                      <div className="mt-1 flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-none bg-dark-walnut text-walnut">
-                        <CheckCircle2 size={20} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10">
+                  {features.map((feat, i) => (
+                    <FadeIn key={i} delay={i * 0.1} direction="left" className="flex items-start gap-4">
+                      <div className="flex-shrink-0 text-walnut mt-1">
+                        {feat.icon}
                       </div>
-                      <div>
-                        <h4 className="text-xl font-bold mb-2">{feat.title}</h4>
-                        <p className="text-silver leading-relaxed">{feat.desc}</p>
-                      </div>
+                      <h4 className="text-lg font-medium text-sand">{feat.title}</h4>
                     </FadeIn>
                   ))}
                 </div>
@@ -432,33 +402,33 @@ export default function App() {
           </div>
         </section>
 
-        {/* PROCESS */}
-        <section className="py-24 md:py-32 bg-charcoal border-y border-ash overflow-hidden">
+        {/* PROCESS (LIGHT SECTION) */}
+        <section id="process" className="py-24 md:py-32 bg-linen text-jet">
           <div className="container mx-auto px-6 lg:px-12">
-            <FadeIn className="text-center max-w-3xl mx-auto mb-20">
-              <div className="section-heading">فرآیند انجام پروژه</div>
-              <h2 className="text-3xl md:text-5xl font-bold">مسیر خلق رویای شما</h2>
+            <FadeIn className="text-center max-w-3xl mx-auto mb-24">
+              <div className="section-heading text-copper">فرآیند انجام پروژه</div>
+              <h2 className="text-3xl md:text-5xl font-black text-jet">مسیر تحقق یک ایده</h2>
             </FadeIn>
 
             <div className="relative">
               {/* Desktop Line */}
-              <div className="hidden lg:block absolute top-10 left-0 w-full h-[1px] bg-ash" />
+              <div className="hidden lg:block absolute top-12 left-0 w-full h-[2px] bg-sand" />
               
-              <div className="flex flex-col lg:flex-row gap-12 lg:gap-6 justify-between">
+              <div className="flex flex-col lg:flex-row gap-12 lg:gap-4 justify-between">
                 {processSteps.map((step, i) => (
-                  <FadeIn key={i} delay={i * 0.15} className="relative flex-1 group">
+                  <FadeIn key={i} delay={i * 0.1} className="relative flex-1 group">
                     {/* Mobile Line */}
                     {i !== processSteps.length - 1 && (
-                      <div className="lg:hidden absolute top-10 right-10 w-[1px] h-full bg-ash -z-10" />
+                      <div className="lg:hidden absolute top-12 right-12 w-[2px] h-[calc(100%+3rem)] bg-sand -z-10" />
                     )}
                     
                     <div className="flex lg:flex-col gap-6 lg:gap-8 items-start lg:items-center text-right lg:text-center">
-                      <div className="w-20 h-20 rounded-full bg-coal border border-walnut flex items-center justify-center text-xl font-bold text-walnut relative z-10 group-hover:bg-walnut group-hover:text-coal transition-colors duration-500 shadow-[0_0_15px_rgba(196,154,108,0.1)] group-hover:shadow-[0_0_20px_rgba(196,154,108,0.4)]">
-                        {step.num}
+                      <div className="w-24 h-24 rounded-full bg-linen border-4 border-sand flex items-center justify-center text-2xl font-black text-clay relative z-10 group-hover:bg-walnut group-hover:border-walnut group-hover:text-jet transition-all duration-300">
+                        <PersianNumber num={step.num} />
                       </div>
                       <div>
-                        <h4 className="text-lg font-bold mb-3 text-parchment group-hover:text-walnut transition-colors">{step.title}</h4>
-                        <p className="text-sm text-silver leading-relaxed max-w-[200px] mx-auto">{step.desc}</p>
+                        <h4 className="text-xl font-bold mb-3 text-jet">{step.title}</h4>
+                        <p className="text-sm text-jet/70 leading-relaxed max-w-[200px] mx-auto">{step.desc}</p>
                       </div>
                     </div>
                   </FadeIn>
@@ -468,196 +438,169 @@ export default function App() {
           </div>
         </section>
 
-        {/* TESTIMONIALS */}
-        <section className="py-24 md:py-32 bg-coal grain-bg relative">
-          <div className="container mx-auto px-6 lg:px-12 relative z-10">
-            <FadeIn className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
-              <div className="section-heading">نظرات مشتریان</div>
-              <h2 className="text-3xl md:text-5xl font-bold">آنچه درباره ما می‌گویند</h2>
+        {/* PORTFOLIO (DARK SECTION) */}
+        <section id="portfolio" className="py-24 md:py-32 bg-charcoal">
+          <div className="container mx-auto px-6 lg:px-12">
+            <FadeIn className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+              <div>
+                <div className="section-heading">نمونه کارهای ما</div>
+                <h2 className="text-3xl md:text-5xl font-black text-sand">تجلی زیبایی در اجرا</h2>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {['همه', 'کابینت', 'کمد', 'تی وی وال', 'دکوراسیون', 'درب'].map(cat => (
+                  <button 
+                    key={cat}
+                    onClick={() => setActiveFilter(cat)}
+                    className={`px-6 py-2.5 text-sm transition-all duration-300 ${activeFilter === cat ? 'bg-walnut text-jet font-bold' : 'bg-jet text-fog hover:bg-ash hover:text-sand'}`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </FadeIn>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {testimonials.map((t, i) => (
-                <FadeIn key={i} delay={i * 0.1}>
-                  <div className="glass p-8 md:p-10 h-full flex flex-col relative group hover:-translate-y-2 transition-transform duration-500">
-                    <span className="text-6xl text-walnut/20 absolute top-6 right-8 font-serif leading-none group-hover:text-walnut/40 transition-colors">"</span>
-                    <p className="text-silver leading-relaxed mb-8 flex-1 relative z-10 pt-4">
-                      {t.text}
-                    </p>
-                    <div className="flex items-center gap-4 mt-auto border-t border-ash pt-6">
-                      <img src={t.avatar} alt={t.name} className="w-14 h-14 rounded-full object-cover border border-walnut/30" />
-                      <div>
-                        <h4 className="font-bold text-parchment">{t.name}</h4>
-                        <p className="text-xs text-silver mt-1">{t.role}</p>
-                      </div>
-                      <div className="mr-auto flex text-walnut gap-1">
-                        {[...Array(t.stars)].map((_, j) => <Star key={j} size={14} fill="currentColor" />)}
-                      </div>
+            <motion.div layout className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[250px] md:auto-rows-[300px]">
+              <AnimatePresence>
+                {filteredProjects.map((p) => (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.4 }}
+                    key={p.id} 
+                    className={`relative overflow-hidden group cursor-pointer ${p.span}`}
+                    onClick={() => setLightboxImg(p.img)}
+                  >
+                    <img src={p.img} alt={p.cat} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                    
+                    {/* Elegant overlay for placeholder state */}
+                    <div className="absolute inset-0 bg-jet/80 flex flex-col items-center justify-center p-6 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      <span className="px-3 py-1 bg-walnut text-jet text-xs font-bold mb-4">{p.cat}</span>
+                      <h4 className="text-lg font-medium text-sand mb-2">تصویر پروژه</h4>
+                      <p className="text-sm text-fog font-light">به زودی اضافه می‌شود</p>
                     </div>
-                  </div>
-                </FadeIn>
-              ))}
-            </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
           </div>
         </section>
 
-        {/* FAQ */}
-        <section id="faq" className="py-24 md:py-32 bg-charcoal border-y border-ash">
-          <div className="container mx-auto px-6 lg:px-12 max-w-4xl">
-            <FadeIn className="text-center mb-16">
-              <div className="section-heading">سوالات متداول</div>
-              <h2 className="text-3xl md:text-4xl font-bold">پاسخ به پرسش‌های شما</h2>
+        {/* CLIENTS (DARK CONTINUED) */}
+        <section id="clients" className="py-20 bg-jet border-t border-ash overflow-hidden">
+          <div className="container mx-auto px-6 lg:px-12">
+            <FadeIn className="text-center mb-12">
+              <h2 className="text-sm font-bold text-fog tracking-widest uppercase">اعتماد بهترین‌ها</h2>
             </FadeIn>
-
-            <div className="space-y-4">
-              {faqs.map((faq, i) => (
-                <FadeIn key={i} delay={i * 0.05}>
-                  <div className="border border-ash bg-coal">
-                    <button 
-                      onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                      className="w-full flex items-center justify-between p-6 text-right focus:outline-none"
-                    >
-                      <span className={`font-bold transition-colors ${openFaq === i ? 'text-walnut' : 'text-parchment'}`}>{faq.q}</span>
-                      <ChevronDown className={`text-silver transition-transform duration-300 ${openFaq === i ? 'rotate-180 text-walnut' : ''}`} size={20} />
-                    </button>
-                    <AnimatePresence>
-                      {openFaq === i && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="p-6 pt-0 text-silver leading-relaxed border-t border-ash/50 mt-2">
-                            {faq.a}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+            
+            <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-8 md:gap-x-24 opacity-60">
+              {clients.map((client, i) => (
+                <FadeIn key={i} delay={i * 0.1} direction="up" className="text-xl md:text-3xl font-black text-ash hover:text-walnut transition-colors duration-300">
+                  {client}
                 </FadeIn>
               ))}
             </div>
           </div>
         </section>
 
-        {/* CONTACT */}
-        <section id="contact" className="py-24 md:py-32 bg-coal relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-1/3 h-full bg-charcoal hidden lg:block" />
-          
+        {/* CONTACT (LIGHT SECTION) */}
+        <section id="contact" className="py-24 md:py-32 bg-sand text-jet relative">
           <div className="container mx-auto px-6 lg:px-12 relative z-10">
-            <div className="flex flex-col lg:flex-row gap-16 items-stretch">
+            <div className="flex flex-col lg:flex-row gap-16">
               
-              {/* Info Panel */}
-              <FadeIn className="w-full lg:w-1/3 py-8">
-                <div className="section-heading">ارتباط با ما</div>
-                <h2 className="text-3xl md:text-5xl font-bold mb-8">آماده‌ی خلق فضای رویایی شما هستیم</h2>
-                <p className="text-silver mb-12 leading-relaxed">
-                  تیم طراحی و مهندسی ما آماده شنیدن ایده‌های شماست. با ما تماس بگیرید تا اولین قدم را برداریم.
-                </p>
-
-                <div className="space-y-8">
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 border border-walnut/30 bg-dark-walnut flex items-center justify-center text-walnut shrink-0">
-                      <MapPin size={20} />
-                    </div>
+              {/* Contact Info */}
+              <FadeIn className="w-full lg:w-5/12" direction="right">
+                <div className="section-heading text-copper">تماس با ما</div>
+                <h2 className="text-3xl md:text-5xl font-black mb-12">در مسیر خلق یک اثر، همراه شما هستیم.</h2>
+                
+                <div className="space-y-8 text-jet/80">
+                  <div className="flex gap-4 items-start">
+                    <MapPin className="text-walnut shrink-0 mt-1" size={24} />
                     <div>
-                      <h4 className="font-bold text-parchment mb-1">آدرس استودیو</h4>
-                      <p className="text-sm text-silver leading-relaxed">تهران، نیاوران، خیابان ولیعصر، پلاک ۱۲</p>
+                      <h4 className="font-bold text-jet mb-1">آدرس</h4>
+                      <p className="leading-relaxed">تهران، شهرک صنعتی قلعه میر،<br />کوچه گلبو، پلاک ۲۰</p>
                     </div>
                   </div>
                   
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 border border-walnut/30 bg-dark-walnut flex items-center justify-center text-walnut shrink-0">
-                      <Phone size={20} />
-                    </div>
+                  <div className="flex gap-4 items-start">
+                    <Phone className="text-walnut shrink-0 mt-1" size={24} />
                     <div>
-                      <h4 className="font-bold text-parchment mb-1">تلفن‌های تماس</h4>
-                      <p className="text-sm text-silver flex flex-col gap-1" dir="ltr">
-                        <span>021 - 1234 5678</span>
-                        <span>0912 345 6789</span>
-                      </p>
+                      <h4 className="font-bold text-jet mb-1">تلفن تماس</h4>
+                      <p dir="ltr" className="text-right">0912 133 1602</p>
+                      <p dir="ltr" className="text-right">0912 359 4953</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-4 items-start">
+                    <Mail className="text-walnut shrink-0 mt-1" size={24} />
+                    <div>
+                      <h4 className="font-bold text-jet mb-1">ایمیل</h4>
+                      <p className="font-sans">tooskachoob12@gmail.com</p>
                     </div>
                   </div>
 
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 border border-walnut/30 bg-dark-walnut flex items-center justify-center text-walnut shrink-0">
-                      <Mail size={20} />
-                    </div>
+                  <div className="flex gap-4 items-start">
+                    <CalendarDays className="text-walnut shrink-0 mt-1" size={24} />
                     <div>
-                      <h4 className="font-bold text-parchment mb-1">ایمیل</h4>
-                      <p className="text-sm text-silver" dir="ltr">info@tooskachoob.ir</p>
+                      <h4 className="font-bold text-jet mb-1">ساعات کاری</h4>
+                      <p>شنبه تا چهارشنبه: ۸ صبح تا ۹ شب</p>
+                      <p>پنجشنبه: ۸ صبح تا ۲ ظهر</p>
+                      <p className="text-clay font-medium">جمعه: تعطیل</p>
                     </div>
                   </div>
                 </div>
               </FadeIn>
 
               {/* Form */}
-              <FadeIn className="w-full lg:w-2/3">
-                <div className="glass p-8 md:p-12 border border-ash h-full">
-                  <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full justify-between gap-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div>
-                        <label className="block text-sm text-silver mb-2">نام و نام خانوادگی</label>
-                        <input 
-                          {...register('name')}
-                          className={`w-full bg-coal border ${errors.name ? 'border-destructive' : 'border-ash focus:border-walnut'} px-4 py-3 text-parchment focus:outline-none transition-colors`}
-                          placeholder="علی رضایی"
-                        />
-                        {errors.name && <span className="text-xs text-destructive mt-1 block">{errors.name.message}</span>}
+              <FadeIn className="w-full lg:w-7/12" direction="left">
+                <div className="bg-white p-8 md:p-12 shadow-xl shadow-jet/5 border border-linen">
+                  <h3 className="text-2xl font-bold mb-8 text-jet">ارسال درخواست مشاوره</h3>
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-jet/70">نام و نام خانوادگی *</label>
+                        <input {...register('name')} className="w-full bg-sand border-none focus:ring-2 focus:ring-walnut px-4 py-3 outline-none" />
+                        {errors.name && <span className="text-xs text-red-600">{errors.name.message}</span>}
                       </div>
-                      <div>
-                        <label className="block text-sm text-silver mb-2">شماره تماس</label>
-                        <input 
-                          {...register('phone')} dir="ltr"
-                          className={`w-full bg-coal border ${errors.phone ? 'border-destructive' : 'border-ash focus:border-walnut'} px-4 py-3 text-parchment focus:outline-none transition-colors text-right`}
-                          placeholder="09123456789"
-                        />
-                        {errors.phone && <span className="text-xs text-destructive mt-1 block">{errors.phone.message}</span>}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-jet/70">شماره تماس *</label>
+                        <input {...register('phone')} dir="ltr" className="w-full bg-sand border-none focus:ring-2 focus:ring-walnut px-4 py-3 outline-none text-right" />
+                        {errors.phone && <span className="text-xs text-red-600">{errors.phone.message}</span>}
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-jet/70">ایمیل (اختیاری)</label>
+                        <input {...register('email')} dir="ltr" className="w-full bg-sand border-none focus:ring-2 focus:ring-walnut px-4 py-3 outline-none text-right font-sans" />
+                        {errors.email && <span className="text-xs text-red-600">{errors.email.message}</span>}
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-jet/70">نوع خدمت *</label>
+                        <select {...register('service')} className="w-full bg-sand border-none focus:ring-2 focus:ring-walnut px-4 py-3 outline-none appearance-none">
+                          <option value="">انتخاب کنید...</option>
+                          <option value="کابینت آشپزخانه">کابینت آشپزخانه</option>
+                          <option value="کمد دیواری">کمد دیواری</option>
+                          <option value="تی وی وال">تی وی وال</option>
+                          <option value="دکوراسیون داخلی">دکوراسیون داخلی</option>
+                          <option value="درب های چوبی">درب های چوبی</option>
+                          <option value="پارتیشن">پارتیشن</option>
+                        </select>
+                        {errors.service && <span className="text-xs text-red-600">{errors.service.message}</span>}
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div>
-                        <label className="block text-sm text-silver mb-2">ایمیل (اختیاری)</label>
-                        <input 
-                          {...register('email')} dir="ltr"
-                          className={`w-full bg-coal border ${errors.email ? 'border-destructive' : 'border-ash focus:border-walnut'} px-4 py-3 text-parchment focus:outline-none transition-colors text-right`}
-                          placeholder="info@example.com"
-                        />
-                        {errors.email && <span className="text-xs text-destructive mt-1 block">{errors.email.message}</span>}
-                      </div>
-                      <div>
-                        <label className="block text-sm text-silver mb-2">نوع خدمت مورد نظر</label>
-                        <div className="relative">
-                          <select 
-                            {...register('service')}
-                            className={`w-full bg-coal border ${errors.service ? 'border-destructive' : 'border-ash focus:border-walnut'} px-4 py-3 text-parchment focus:outline-none transition-colors appearance-none`}
-                          >
-                            <option value="">انتخاب کنید...</option>
-                            <option value="کابینت">کابینت آشپزخانه</option>
-                            <option value="کمد">کمد و جاکفشی</option>
-                            <option value="دیوار TV">دیوار TV</option>
-                            <option value="درب">درب‌های داخلی</option>
-                            <option value="دکوراسیون">دکوراسیون کامل</option>
-                          </select>
-                          <ChevronDown size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-silver pointer-events-none" />
-                        </div>
-                        {errors.service && <span className="text-xs text-destructive mt-1 block">{errors.service.message}</span>}
-                      </div>
-                    </div>
-
-                    <div className="flex-1">
-                      <label className="block text-sm text-silver mb-2">پیام شما</label>
-                      <textarea 
-                        {...register('message')} rows={5}
-                        className={`w-full bg-coal border ${errors.message ? 'border-destructive' : 'border-ash focus:border-walnut'} px-4 py-3 text-parchment focus:outline-none transition-colors resize-none h-full min-h-[120px]`}
-                        placeholder="توضیحات کوتاهی درباره پروژه خود بنویسید..."
-                      />
-                      {errors.message && <span className="text-xs text-destructive mt-1 block">{errors.message.message}</span>}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-jet/70">پیام / توضیحات *</label>
+                      <textarea {...register('message')} rows={4} className="w-full bg-sand border-none focus:ring-2 focus:ring-walnut px-4 py-3 outline-none resize-none" />
+                      {errors.message && <span className="text-xs text-red-600">{errors.message.message}</span>}
                     </div>
 
                     <button 
-                      type="submit" disabled={isSubmitting}
-                      className="w-full btn-primary py-4 text-lg mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                      type="submit" 
+                      disabled={isSubmitting}
+                      className="w-full btn-primary py-4 text-lg mt-4 disabled:opacity-70"
                     >
                       {isSubmitting ? 'در حال ارسال...' : 'ارسال درخواست'}
                     </button>
@@ -671,57 +614,80 @@ export default function App() {
       </main>
 
       {/* FOOTER */}
-      <footer className="bg-[#050505] pt-20 pb-8 border-t border-ash">
+      <footer className="bg-jet pt-20 border-t border-ash text-sand">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-            
-            <div>
-              <span className="text-3xl font-bold text-walnut tracking-tight block mb-4">توسکا چوب</span>
-              <p className="text-silver text-sm leading-loose mb-6 pr-2 border-r-2 border-walnut/30">
-                طراحی و اجرای لوکس‌ترین پروژه‌های دکوراسیون چوبی، با تلفیقی از هنر دست و دقت ماشین‌آلات مدرن.
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-3xl font-black text-walnut mb-2">توسکا چوب</h3>
+                <p className="text-sm text-fog uppercase tracking-widest">معماری فضا و چوب</p>
+              </div>
+              <p className="text-sm text-fog leading-relaxed">
+                طراحی و اجرای دکوراسیون داخلی با بیش از ۳۲ سال سابقه درخشان در صنعت چوب.
               </p>
               <div className="flex gap-4">
-                <a href="#" className="text-silver hover:text-walnut transition-colors"><SiInstagram size={20} /></a>
-                <a href="#" className="text-silver hover:text-walnut transition-colors"><SiWhatsapp size={20} /></a>
+                <a href="https://t.me/tooska_chob" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-ash flex items-center justify-center text-fog hover:bg-walnut hover:text-jet transition-colors">
+                  <SiTelegram size={18} />
+                </a>
+                <div className="relative group">
+                  <a href="#" onClick={(e)=>e.preventDefault()} className="w-10 h-10 rounded-full bg-ash flex items-center justify-center text-fog transition-colors cursor-default">
+                    <SiInstagram size={18} />
+                  </a>
+                  <span className="absolute -top-8 right-1/2 translate-x-1/2 px-2 py-1 bg-charcoal border border-ash text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">به زودی</span>
+                </div>
               </div>
             </div>
 
             <div>
-              <h4 className="text-parchment font-bold mb-6">خدمات ما</h4>
-              <ul className="space-y-3">
-                {services.slice(0,5).map(s => (
-                  <li key={s.title}><a href="#services" className="text-silver hover:text-walnut text-sm transition-colors">{s.title}</a></li>
+              <h4 className="text-lg font-bold mb-6 text-sand">خدمات ما</h4>
+              <ul className="space-y-4">
+                {services.map(s => (
+                  <li key={s.title}>
+                    <a href="#services" className="text-sm text-fog hover:text-walnut transition-colors">{s.title}</a>
+                  </li>
                 ))}
               </ul>
             </div>
 
             <div>
-              <h4 className="text-parchment font-bold mb-6">لینک‌های سریع</h4>
-              <ul className="space-y-3">
-                {navLinks.slice(1).map(l => (
-                  <li key={l.label}><a href={l.href} className="text-silver hover:text-walnut text-sm transition-colors">{l.label}</a></li>
+              <h4 className="text-lg font-bold mb-6 text-sand">لینک‌های سریع</h4>
+              <ul className="space-y-4">
+                {navLinks.map(l => (
+                  <li key={l.label}>
+                    <a href={l.href} className="text-sm text-fog hover:text-walnut transition-colors">{l.label}</a>
+                  </li>
                 ))}
               </ul>
             </div>
 
             <div>
-              <h4 className="text-parchment font-bold mb-6">ساعات کاری</h4>
-              <ul className="space-y-3 text-sm text-silver">
-                <li className="flex justify-between border-b border-ash pb-2"><span>شنبه تا چهارشنبه</span> <span>۹:۰۰ - ۱۸:۰۰</span></li>
-                <li className="flex justify-between border-b border-ash pb-2"><span>پنجشنبه</span> <span>۹:۰۰ - ۱۴:۰۰</span></li>
-                <li className="flex justify-between pb-2 text-walnut"><span>جمعه و ایام تعطیل</span> <span>بسته است</span></li>
+              <h4 className="text-lg font-bold mb-6 text-sand">ساعات کاری</h4>
+              <ul className="space-y-4 text-sm text-fog">
+                <li className="flex justify-between border-b border-ash pb-2">
+                  <span>شنبه - چهارشنبه</span>
+                  <span>۰۸:۰۰ - ۲۱:۰۰</span>
+                </li>
+                <li className="flex justify-between border-b border-ash pb-2">
+                  <span>پنجشنبه</span>
+                  <span>۰۸:۰۰ - ۱۴:۰۰</span>
+                </li>
+                <li className="flex justify-between text-clay font-bold">
+                  <span>جمعه</span>
+                  <span>تعطیل</span>
+                </li>
               </ul>
             </div>
-
           </div>
+        </div>
 
-          <div className="border-t border-ash pt-8 text-center md:text-right flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-silver text-xs">
-              © ۱۴۰۳ توسکا چوب. کلیه حقوق محفوظ است.
+        <div className="border-t border-ash py-6">
+          <div className="container mx-auto px-6 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-xs text-fog">
+              © <PersianNumber num={1403} /> توسکا چوب. تمامی حقوق محفوظ است.
             </p>
-            <div className="flex gap-4 text-xs text-silver">
-              <a href="#" className="hover:text-parchment transition-colors">حریم خصوصی</a>
-              <a href="#" className="hover:text-parchment transition-colors">شرایط استفاده</a>
+            <div className="flex gap-6 text-xs text-fog">
+              <a href="#" className="hover:text-sand">حریم خصوصی</a>
+              <a href="#" className="hover:text-sand">شرایط استفاده</a>
             </div>
           </div>
         </div>
@@ -732,17 +698,18 @@ export default function App() {
         {lightboxImg && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-coal/95 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
+            className="fixed inset-0 z-[200] bg-jet/95 backdrop-blur-sm flex items-center justify-center p-4 md:p-12 cursor-pointer"
             onClick={() => setLightboxImg(null)}
           >
-            <button className="absolute top-6 right-6 text-silver hover:text-white transition-colors">
-              <X size={36} strokeWidth={1.5} />
+            <button className="absolute top-6 right-6 text-sand hover:text-walnut z-[210] p-2" onClick={() => setLightboxImg(null)}>
+              <X size={32} />
             </button>
             <motion.img 
               initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              src={lightboxImg} className="max-w-full max-h-full object-contain shadow-2xl" 
-              onClick={(e) => e.stopPropagation()} 
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              src={lightboxImg} alt="Portfolio Fullscreen" 
+              className="max-w-full max-h-full object-contain shadow-2xl" 
+              onClick={(e) => e.stopPropagation()}
             />
           </motion.div>
         )}
