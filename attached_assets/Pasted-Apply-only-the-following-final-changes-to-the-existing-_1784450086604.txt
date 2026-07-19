@@ -1,0 +1,104 @@
+Apply only the following final changes to the existing Tooska Choob website.
+
+IMPORTANT:
+- Do not redesign the website.
+- Do not change the current layout, colors, fonts, animations, images, or overall style.
+- Keep everything exactly the same except the changes listed below.
+
+Favicon:
+- The uploaded logo file must be used as the website favicon.
+- Add this exact uploaded logo file as favicon.
+- Make sure it appears in the browser tab and when adding the website to the home screen.
+- Do not place the logo anywhere inside the website pages.
+- Do not add it to the header, navbar, or sections.
+- The logo is only for favicon use.
+
+Hero Section Text:
+- In the first section under "توسکا چوب", replace the current text:
+
+"طراحی و اجرای کابینت، دکوراسیون داخلی، تی وی وال، کمد دیواری و درب های چوبی"
+
+With:
+
+"طراحی و اجرای انواع درب، کابینت و دکوراسیون داخلی؛ از تی‌وی وال و کمد دیواری تا خلق فضاهای منحصربه‌فرد."
+
+- Do not use the phrase "درب های چوبی" because it limits the brand.
+- Keep the meaning broad so it represents different types of doors and complete interior solutions.
+
+Instagram Button:
+- The Instagram button is currently not working.
+- Fix only this button.
+- When users click Instagram, do not open an empty page and do not do nothing.
+- Show this message:
+"اینستاگرام به‌زودی فعال می‌شود"
+- This can be a popup/modal or notification.
+- Do not change anything else in the social media section.
+
+Portfolio Section ("نمونه کارهای ما"):
+- Keep the current gallery style.
+- Remove the extra text below the title.
+- Keep only:
+"تجلی زیبایی در اجرا"
+- Remove category/filter texts:
+"همه"
+"کابینت"
+"کمد"
+and similar labels.
+- Show only the gallery images.
+
+Portfolio Images:
+- Remove these images from the current portfolio order:
+Image number 4
+Image number 6
+Image number 7
+Image number 8
+(counting from top to bottom)
+- Keep all other portfolio images unchanged.
+
+"پشتوانه‌ای از اصالت و تعهد به کیفیت" Section:
+- Remove only the image below this section.
+- Keep the text and section design.
+- Do not replace the image.
+- Do not make any other changes.
+
+Content Improvements:
+- Replace:
+"تسلط بر چوب و فضا"
+
+With:
+"تسلط بر طراحی و اجرای فضا"
+
+- Change:
+"+500 پروژه اجرا شده"
+
+To:
+"+1000 پروژه اجرا شده"
+
+- In the guarantee section, replace:
+"ضمانت ۶ ماهه (به جز یراق آلات)"
+with cleaner professional wording that does not highlight limitations or exceptions.
+
+Brand Direction:
+- The website should not look like it belongs only to a wood company.
+- Keep the premium wood atmosphere, but make it clear that Tooska Choob provides complete interior design and execution solutions.
+- The company works with different types of doors, cabinets, MDF, custom designs and complete space execution.
+- Do not list every service separately.
+
+Readability:
+- In the "اعتماد بهترین‌ها" section, make the text and names slightly brighter so they are easier to read from the background.
+
+Keep previous implemented features:
+- Premium loading screen
+- Active navigation
+- Smooth scrolling
+- Lightbox gallery
+- Lazy loading
+- SEO improvements
+- Scroll-to-top button
+- Contact form improvements
+- Accessibility improvements
+
+Final Requirements:
+- Apply only these changes.
+- Keep the website premium, minimal and professional.
+- The final result should be ready for publishing and client presentation.

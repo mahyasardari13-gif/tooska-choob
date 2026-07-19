@@ -20,15 +20,10 @@ import sTvwall   from "../attached_assets/generated_images/service_tvwall.jpg";
 import sWardrobe from "../attached_assets/generated_images/service_wardrobe.jpg";
 import sDecor    from "../attached_assets/generated_images/service_decor.jpg";
 import sPartition from "../attached_assets/generated_images/service_partition.jpg";
-import aboutImg  from "../attached_assets/generated_images/about_workshop.jpg";
 import p1 from "../attached_assets/generated_images/portfolio_1.jpg";
 import p2 from "../attached_assets/generated_images/portfolio_2.jpg";
 import p3 from "../attached_assets/generated_images/portfolio_3.jpg";
-import p4 from "../attached_assets/generated_images/portfolio_4.jpg";
 import p5 from "../attached_assets/generated_images/portfolio_5.jpg";
-import p6 from "../attached_assets/generated_images/portfolio_6.jpg";
-import p7 from "../attached_assets/generated_images/portfolio_7.jpg";
-import p8 from "../attached_assets/generated_images/portfolio_8.jpg";
 
 // ─── Form Schema ──────────────────────────────────────────────────────
 const contactSchema = z.object({
@@ -87,11 +82,7 @@ const PROJECTS = [
   { id: 1, img: p1, cat: 'کابینت',    span: 'md:col-span-2 md:row-span-2' },
   { id: 2, img: p2, cat: 'کمد',       span: 'md:col-span-1 md:row-span-1' },
   { id: 3, img: p3, cat: 'تی وی وال', span: 'md:col-span-1 md:row-span-1' },
-  { id: 4, img: p4, cat: 'دکوراسیون', span: 'md:col-span-1 md:row-span-2' },
   { id: 5, img: p5, cat: 'کابینت',    span: 'md:col-span-2 md:row-span-1' },
-  { id: 6, img: p6, cat: 'درب',       span: 'md:col-span-1 md:row-span-1' },
-  { id: 7, img: p7, cat: 'دکوراسیون', span: 'md:col-span-1 md:row-span-1' },
-  { id: 8, img: p8, cat: 'کمد',       span: 'md:col-span-1 md:row-span-1' },
 ];
 
 const CLIENTS = ['ASP', 'گنو', 'آلدوز آذربایجان', 'توسعه صنعتی ایران', 'آباد راهان'];
@@ -336,22 +327,13 @@ export default function App() {
       {/* ── Floating Action Buttons ── */}
       <div className="fixed bottom-6 left-6 z-[60] flex flex-col gap-3">
         {/* Instagram — coming soon */}
-        <div className="relative group">
-          <button
-            aria-label="اینستاگرام توسکا چوب (به زودی)"
-            disabled
-            className="w-11 h-11 rounded-full bg-jet/80 border border-ash flex items-center justify-center text-fog cursor-not-allowed select-none"
-          >
-            <SiInstagram size={19} />
-          </button>
-          <div
-            role="tooltip"
-            className="absolute right-full top-1/2 -translate-y-1/2 mr-3 px-3 py-1.5 bg-charcoal border border-ash text-xs text-sand whitespace-nowrap
-                       opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none select-none"
-          >
-            به زودی فعال می‌شود
-          </div>
-        </div>
+        <button
+          aria-label="اینستاگرام توسکا چوب (به زودی)"
+          onClick={() => toast('اینستاگرام به‌زودی فعال می‌شود', { duration: 3500 })}
+          className="w-11 h-11 rounded-full bg-jet/80 border border-ash flex items-center justify-center text-fog hover:text-sand hover:border-sand/40 transition-all duration-300"
+        >
+          <SiInstagram size={19} />
+        </button>
 
         {/* Telegram */}
         <a
@@ -621,24 +603,8 @@ export default function App() {
           <div className="container mx-auto px-6 lg:px-12 relative z-10">
             <div className="flex flex-col lg:flex-row gap-16 items-center">
 
-              {/* Image with border accent */}
-              <FadeIn className="w-full lg:w-5/12 order-2 lg:order-1" direction="right">
-                <div className="relative">
-                  <div className="aspect-[3/4] overflow-hidden">
-                    <img
-                      src={aboutImg}
-                      alt="کارگاه توسکا چوب"
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover grayscale-[15%]"
-                    />
-                  </div>
-                  <div className="absolute -bottom-5 -left-5 w-full h-full border border-walnut/40 -z-10" />
-                </div>
-              </FadeIn>
-
-              {/* Content */}
-              <div className="w-full lg:w-7/12 order-1 lg:order-2">
+              {/* Content — full width, no image */}
+              <div className="w-full">
                 <FadeIn direction="left">
                   <span className="section-heading">چرا توسکا چوب؟</span>
                   <h2 className="text-3xl md:text-5xl font-black mb-7 leading-tight">
@@ -716,28 +682,9 @@ export default function App() {
         ══════════════════════════════════════ */}
         <section id="portfolio" className="py-24 md:py-32 bg-charcoal">
           <div className="container mx-auto px-6 lg:px-12">
-            <FadeIn className="flex flex-col md:flex-row justify-between items-end mb-14 gap-8">
-              <div>
-                <span className="section-heading">نمونه کارهای ما</span>
-                <h2 className="text-3xl md:text-5xl font-black text-sand">تجلی زیبایی در اجرا</h2>
-              </div>
-              {/* Filter tabs */}
-              <div role="group" aria-label="فیلتر پروژه‌ها" className="flex flex-wrap gap-2">
-                {['همه', 'کابینت', 'کمد', 'تی وی وال', 'دکوراسیون', 'درب'].map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => setActiveFilter(cat)}
-                    aria-pressed={activeFilter === cat}
-                    className={`px-5 py-2 text-sm transition-all duration-300 ${
-                      activeFilter === cat
-                        ? 'bg-walnut text-jet font-bold'
-                        : 'bg-jet text-fog hover:bg-ash hover:text-sand'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
+            <FadeIn className="mb-14">
+              <span className="section-heading">نمونه کارهای ما</span>
+              <h2 className="text-3xl md:text-5xl font-black text-sand">تجلی زیبایی در اجرا</h2>
             </FadeIn>
 
             <motion.div layout className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[240px] md:auto-rows-[280px]">
@@ -1053,18 +1000,13 @@ export default function App() {
                   >
                     <SiTelegram size={16} />
                   </a>
-                  <div className="relative group">
-                    <button
-                      disabled
-                      aria-label="اینستاگرام توسکا چوب (به زودی)"
-                      className="w-9 h-9 bg-ash flex items-center justify-center text-fog/50 cursor-not-allowed"
-                    >
-                      <SiInstagram size={16} />
-                    </button>
-                    <span className="absolute -top-8 right-0 px-2 py-1 bg-charcoal border border-ash text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-                      به زودی
-                    </span>
-                  </div>
+                  <button
+                    aria-label="اینستاگرام توسکا چوب (به زودی)"
+                    onClick={() => toast('اینستاگرام به‌زودی فعال می‌شود', { duration: 3500 })}
+                    className="w-9 h-9 bg-ash flex items-center justify-center text-fog hover:bg-walnut hover:text-jet transition-all duration-300"
+                  >
+                    <SiInstagram size={16} />
+                  </button>
                 </div>
               </div>
             </div>
