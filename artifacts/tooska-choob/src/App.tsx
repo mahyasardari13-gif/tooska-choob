@@ -1028,7 +1028,7 @@ export default function App() {
             <div>
               <h4 className="text-sm font-bold mb-5 text-sand uppercase tracking-wider">لینک‌های سریع</h4>
               <ul className="space-y-3">
-                {NAV_LINKS.map(l => (
+                {NAV_LINKS.filter(l => l.id !== 'portfolio').map(l => (
                   <li key={l.id}>
                     <a
                       href={l.href}
