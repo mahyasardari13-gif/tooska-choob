@@ -55,12 +55,12 @@ const NAV_LINKS = [
 ];
 
 const SERVICES = [
-  { title: 'کابینت آشپزخانه', desc: 'طراحی و اجرای کابینت‌های سفارشی با بالاترین کیفیت متریال.', img: sKitchen,  span: 'col-span-1 md:col-span-2' },
-  { title: 'کمد دیواری',      desc: 'کمدهای مدرن و کلاسیک با فضاسازی هوشمندانه و ارگونومیک.', img: sWardrobe, span: 'col-span-1' },
-  { title: 'تی وی وال',       desc: 'دیوارهای دکوراتیو و نقاط کانونی خیره‌کننده برای نشیمن.',  img: sTvwall,   span: 'col-span-1' },
-  { title: 'دکوراسیون داخلی', desc: 'طراحی جامع و یکپارچه فضاهای مسکونی و اداری.',              img: sDecor,    span: 'col-span-1 md:col-span-2' },
-  { title: 'درب های چوبی',    desc: 'درب‌های تمام چوب، روکش چوب و مدرن با دوام بی‌نظیر.',      img: sDoor,     span: 'col-span-1 md:col-span-2' },
-  { title: 'پارتیشن',         desc: 'جداکننده‌های فضا با طراحی خلاقانه و کاربردی.',              img: sPartition, span: 'col-span-1' },
+  { title: 'کابینت و طراحی آشپزخانه', desc: 'طراحی و اجرای کامل آشپزخانه با متریال درجه یک و سبک‌های مدرن، کلاسیک و نئوکلاسیک.', img: sKitchen,  span: 'col-span-1 md:col-span-2' },
+  { title: 'کمد و فضاهای ذخیره‌سازی', desc: 'راهکارهای هوشمند ذخیره‌سازی با طراحی سفارشی متناسب با معماری فضا.', img: sWardrobe, span: 'col-span-1' },
+  { title: 'تی وی وال و دیوارپوش',    desc: 'طراحی نقاط کانونی و دیوارهای دکوراتیو برای فضاهای نشیمن و مدیریتی.', img: sTvwall,   span: 'col-span-1' },
+  { title: 'دکوراسیون داخلی کامل',    desc: 'اجرای جامع و یکپارچه دکوراسیون فضاهای مسکونی، اداری و تجاری از صفر تا تحویل.', img: sDecor,    span: 'col-span-1 md:col-span-2' },
+  { title: 'انواع درب و بازشوها',      desc: 'طراحی و نصب انواع درب داخلی و خارجی در سبک‌های مختلف با متریال و رنگ‌بندی دلخواه.', img: sDoor,     span: 'col-span-1 md:col-span-2' },
+  { title: 'پارتیشن و جداسازی فضا',   desc: 'تفکیک هوشمند فضاها با پارتیشن‌های اداری و مسکونی با طراحی خلاقانه.',              img: sPartition, span: 'col-span-1' },
 ];
 
 const FEATURES = [
@@ -69,7 +69,7 @@ const FEATURES = [
   { icon: <DraftingCompass size={22}/>, title: 'طراحی سه بعدی'                     },
   { icon: <HeadphonesIcon size={22} />, title: 'مشاوره تخصصی'                      },
   { icon: <Ruler          size={22} />, title: 'اندازه گیری در محل'                },
-  { icon: <CheckCircle2   size={22} />, title: 'ضمانت ۶ ماهه (به جز یراق آلات)'   },
+  { icon: <CheckCircle2   size={22} />, title: 'ضمانت کیفیت اجرا'                   },
   { icon: <Wrench         size={22} />, title: 'ضمانت نصب'                         },
   { icon: <Clock          size={22} />, title: 'خدمات پس از فروش'                  },
 ];
@@ -558,7 +558,7 @@ export default function App() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 md:divide-x md:divide-x-reverse md:divide-ash">
               {[
                 { n: 32,  s: '+', l: 'سال تجربه'          },
-                { n: 500, s: '+', l: 'پروژه اجرا شده'     },
+                { n: 1000, s: '+', l: 'پروژه اجرا شده'    },
                 { n: 6,   s: '',  l: 'نوع خدمت تخصصی'     },
                 { n: 6,   s: '',  l: 'ماه ضمانت'           },
               ].map((stat, i) => (
@@ -580,7 +580,7 @@ export default function App() {
           <div className="container mx-auto px-6 lg:px-12">
             <FadeIn className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
               <span className="section-heading text-copper">خدمات توسکا چوب</span>
-              <h2 className="text-3xl md:text-5xl font-black text-jet">تسلط بر چوب و فضا</h2>
+              <h2 className="text-3xl md:text-5xl font-black text-jet">تسلط بر طراحی و اجرای فضا</h2>
             </FadeIn>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
@@ -802,7 +802,7 @@ export default function App() {
                 <FadeIn key={i} delay={i * 0.1} direction="up">
                   <div
                     role="listitem"
-                    className="text-xl md:text-2xl font-black text-ash hover:text-walnut transition-colors duration-400 cursor-default select-none"
+                    className="text-xl md:text-2xl font-black text-sand/80 hover:text-walnut transition-colors duration-400 cursor-default select-none"
                   >
                     {client}
                   </div>
@@ -1039,7 +1039,7 @@ export default function App() {
                 <p className="text-fog text-xs uppercase tracking-widest">از سال ۱۳۷۳</p>
               </div>
               <p className="text-sm text-fog leading-relaxed">
-                طراحی و اجرای دکوراسیون داخلی با بیش از ۳۲ سال سابقه درخشان در صنعت چوب ایران.
+                طراحی و اجرای کامل فضاهای مسکونی و اداری با بیش از ۳۲ سال سابقه درخشان در دکوراسیون داخلی ایران.
               </p>
               <div>
                 <p className="text-xs text-fog mb-3 font-medium">شبکه‌های اجتماعی</p>

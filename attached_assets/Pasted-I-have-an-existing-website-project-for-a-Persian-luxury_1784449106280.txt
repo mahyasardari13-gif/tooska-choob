@@ -1,0 +1,69 @@
+I have an existing website project for a Persian luxury interior design and execution company called "Tooska Choob" (توسکا چوب).
+
+Apply these final improvements to the existing website. Do not rebuild the website from zero. Keep the current premium structure, images, animations, and overall design style. Only improve the details below.
+
+Brand Identity:
+- The official brand name is "توسکا چوب".
+- Use the uploaded logo only as the website favicon.
+- Do not place the logo in the header, navbar, sections, or page content.
+- Keep the website minimal, clean, and luxurious.
+
+Important Brand Direction:
+- The website should not look like it belongs only to a wood company.
+- Keep the elegant wood atmosphere, but make it clear that Tooska Choob is a complete interior design and execution company.
+- The company provides different interior solutions including various types of doors, cabinets, MDF, custom designs, and complete space execution.
+- Do not list every service separately. Create a professional feeling of a complete interior solutions brand.
+
+Content Changes:
+
+1. Replace:
+"تسلط بر چوب و فضا"
+
+With:
+"تسلط بر طراحی و اجرای فضا"
+
+2. Services Section:
+- Avoid making the services look limited only to wooden products.
+- Use broader wording that represents interior design, different types of doors, cabinets, and complete execution solutions.
+- Do not make the website focus only on wood.
+
+3. Why Tooska Choob Section:
+- Change "ضمانت ۶ ماهه (به جز یراق آلات)" to a cleaner and more professional wording.
+- Avoid highlighting limitations or exceptions.
+
+4. Replace:
+"+500 پروژه اجرا شده"
+
+With:
+"+1000 پروژه اجرا شده"
+
+Social Media:
+- Keep Telegram button working normally.
+- Instagram does not have an active page yet.
+- When users click Instagram, show this message:
+"به‌زودی فعال می‌شود"
+
+Readability Improvements:
+- In the "اعتماد بهترین‌ها" section, make the text and names slightly brighter so they are easier to read from the background.
+
+Visual Direction:
+- Keep the current images because they match the premium style.
+- Keep the luxury, modern, and elegant feeling.
+- The website should represent interior design and execution, not only wood.
+- Do not make unnecessary changes or redesign the whole website.
+
+Keep all previous implemented features:
+- Premium loading screen
+- Active navigation
+- Smooth scrolling
+- Lightbox gallery with controls
+- Lazy loading
+- SEO improvements
+- Scroll-to-top button
+- Contact form improvements
+- Accessibility improvements
+
+Final Requirements:
+- Keep responsive design for mobile and desktop.
+- The final result should look like a finished professional company website ready for publishing and client presentation.
+- Make sure the uploaded logo is used only as favicon.
