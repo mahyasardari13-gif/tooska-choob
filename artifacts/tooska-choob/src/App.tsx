@@ -498,7 +498,7 @@ export default function App() {
                 variants={{ hidden: { opacity: 0, y: 28 }, visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } } }}
                 className="text-lg md:text-2xl text-fog max-w-2xl leading-relaxed mb-10 font-light"
               >
-                طراحی و اجرای کابینت، دکوراسیون داخلی، تی وی وال، کمد دیواری و درب های چوبی.
+                طراحی و اجرای انواع درب، کابینت و دکوراسیون داخلی؛ از تی‌وی وال و کمد دیواری تا خلق فضاهای منحصربه‌فرد.
               </motion.p>
 
               <motion.div
@@ -683,7 +683,6 @@ export default function App() {
         <section id="portfolio" className="py-24 md:py-32 bg-charcoal">
           <div className="container mx-auto px-6 lg:px-12">
             <FadeIn className="mb-14">
-              <span className="section-heading">نمونه کارهای ما</span>
               <h2 className="text-3xl md:text-5xl font-black text-sand">تجلی زیبایی در اجرا</h2>
             </FadeIn>
 
@@ -711,10 +710,6 @@ export default function App() {
                       decoding="async"
                       className="w-full h-full object-cover transition-transform duration-[1000ms] ease-out group-hover:scale-[1.06]"
                     />
-                    {/* Category badge */}
-                    <div className="absolute top-4 right-4 px-3 py-1 bg-jet/70 backdrop-blur-sm text-xs text-fog font-medium">
-                      {p.cat}
-                    </div>
                     {/* Hover overlay */}
                     <div className="absolute inset-0 bg-jet/70 opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col items-center justify-center gap-3 p-5 text-center">
                       <div className="w-10 h-10 rounded-full border border-walnut/60 flex items-center justify-center">
